@@ -6,6 +6,7 @@ Homebrew tap for the [MVL (Maximum Verifiable Language)](https://mvl-lang.org) c
 
 ```bash
 brew tap mvl-lang/mvl
+brew trust mvl-lang/mvl    # Homebrew 6.x requires trusting third-party taps
 brew install mvl
 ```
 
@@ -15,6 +16,8 @@ Verify:
 mvl --version    # → mvl 1.0.0
 mvl --help
 ```
+
+> **Why `brew trust`?** Homebrew 6.0 introduced a trust step for third-party taps to protect users from unreviewed formulae. This is a one-time step per tap. Skipping it and running `brew install mvl` produces an error message telling you exactly what to run.
 
 ## First program
 
