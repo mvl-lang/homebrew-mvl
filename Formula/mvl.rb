@@ -33,14 +33,17 @@ class Mvl < Formula
 
     # 2. Stdlib.  Target layout expected by the compiler:
     #      $MVL_HOME/toolchains/<compiler_version>/std/*.mvl
-    #    The tarball unpacks to `std/` at the top level, so we stage it
-    #    into the parent (toolchains/<version>/) and it lands correctly.
-    stdlib_target = share/"mvl/toolchains/#{version}"
+    #    Homebrew's `stage(target)` strips a single top-level directory
+    #    from the tarball.  The stdlib tarball has only `std/` at the
+    #    top, so that gets stripped — we stage INTO the `std/` we want,
+    #    and the .mvl files land directly inside.
+    stdlib_target = share/"mvl/toolchains/#{version}/std"
     stdlib_target.mkpath
     resource("stdlib").stage(stdlib_target)
 
-    # 3. Runtime.  Same pattern — tarball has `rust/` at the top level,
-    #    stage into runtime/<version>/ so it lands as runtime/<version>/rust/.
+    # 3. Runtime.  The runtime tarball has TWO top-level directories
+    #    (`rust/` and `rust-tokio/`), so Homebrew does NOT strip.  We
+    #    stage into runtime/<version>/ and get both sub-dirs preserved.
     runtime_target = share/"mvl/runtime/#{version}"
     runtime_target.mkpath
     resource("runtime").stage(runtime_target)
