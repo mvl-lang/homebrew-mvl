@@ -13,9 +13,11 @@ brew install mvl
 Verify:
 
 ```bash
-mvl --version    # → mvl 1.0.0
+mvl --version    # → mvl 1.3.3
 mvl --help
 ```
+
+**Note:** installing takes a few minutes — the formula builds MVL from source. This means every tagged release is installable without waiting for a separate binary publish pipeline. Prebuilt binary bottles will be added later as a speed optimization.
 
 > **Why `brew trust`?** Homebrew 6.0 introduced a trust step for third-party taps to protect users from unreviewed formulae. This is a one-time step per tap. Skipping it and running `brew install mvl` produces an error message telling you exactly what to run.
 
@@ -43,13 +45,15 @@ The wrapper in `bin/mvl` sets `MVL_HOME=<prefix>/share/mvl` so the compiler can 
 
 ## Platform support
 
+The formula builds MVL from source on any platform Rust and Homebrew's `z3` package support. In practice:
+
 | Platform | Status |
 |----------|--------|
-| macOS on Apple Silicon (arm64) | ✅ Prebuilt binary |
-| macOS on Intel (x86_64) | ⏳ Not yet — build from source not wired up |
-| Linux (x86_64) | ⏳ Not yet |
-| Linux (aarch64) | ⏳ Not yet |
-| Windows | Use WSL2 + Linux build once available |
+| macOS on Apple Silicon (arm64) | ✅ Supported |
+| macOS on Intel (x86_64) | ✅ Supported (build-from-source) |
+| Linux (x86_64) | ✅ Supported via Homebrew on Linux |
+| Linux (aarch64) | ✅ Supported via Homebrew on Linux |
+| Windows | Use WSL2 + Linux Homebrew |
 
 More platforms are added as the upstream release pipeline in [`mvl-lang/mvl`](https://github.com/mvl-lang/mvl) publishes binaries for them.
 
