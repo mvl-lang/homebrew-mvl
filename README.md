@@ -35,6 +35,33 @@ echo 'fn main() -> Unit ! Console { println("hello") }' | mvl check --stdin
 
 For `mvl run` and `mvl build` you also need a working Rust toolchain (`brew install rust`), because MVL currently transpiles to Rust and invokes `cargo` under the hood.
 
+## Installing a specific version line
+
+The tap ships versioned formulas alongside the latest:
+
+```bash
+brew install mvl              # current (whatever we're calling latest — 1.3.3 today)
+brew install mvl@1.0          # v1.0.x — prebuilt binary, ~1s install
+brew install mvl@1.3          # v1.3.x — build from source
+```
+
+Versioned formulas are **keg-only** — they install to their own directory but don't symlink into `bin/` by default. Two use cases:
+
+**Occasional invocation via full path:**
+
+```bash
+/opt/homebrew/opt/mvl@1.0/bin/mvl --version    # → mvl 1.0.0
+```
+
+**Swap the current PATH-linked version:**
+
+```bash
+brew unlink mvl && brew link mvl@1.0    # `mvl` in PATH is now 1.0.0
+brew unlink mvl@1.0 && brew link mvl    # back to current
+```
+
+Bug fixes for a specific line ship as patch bumps of that versioned formula (e.g., `mvl@1.3` moves from 1.3.3 to 1.3.4 without touching the current `mvl` formula).
+
 ## What this tap installs
 
 - `mvl` — the compiler binary (in `bin/`, wrapped so `MVL_HOME` is set automatically)
