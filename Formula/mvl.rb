@@ -31,17 +31,19 @@ class Mvl < Formula
     # 1. The real binary lives in libexec; a wrapper in bin/ sets MVL_HOME.
     libexec.install "mvl"
 
-    # 2. Stdlib layout expected by the compiler:
+    # 2. Stdlib.  Target layout expected by the compiler:
     #      $MVL_HOME/toolchains/<compiler_version>/std/*.mvl
-    resource("stdlib").stage do
-      (share/"mvl/toolchains/#{version}").install "std"
-    end
+    #    The tarball unpacks to `std/` at the top level, so we stage it
+    #    into the parent (toolchains/<version>/) and it lands correctly.
+    stdlib_target = share/"mvl/toolchains/#{version}"
+    stdlib_target.mkpath
+    resource("stdlib").stage(stdlib_target)
 
-    # 3. Runtime layout — Rust FFI bridge lives under runtime/<version>/.
-    #    Sub-directory is `rust/` inside the tarball.
-    resource("runtime").stage do
-      (share/"mvl/runtime/#{version}").install "rust"
-    end
+    # 3. Runtime.  Same pattern — tarball has `rust/` at the top level,
+    #    stage into runtime/<version>/ so it lands as runtime/<version>/rust/.
+    runtime_target = share/"mvl/runtime/#{version}"
+    runtime_target.mkpath
+    resource("runtime").stage(runtime_target)
 
     # 4. Wrap `mvl` so users don't have to export MVL_HOME manually.
     (bin/"mvl").write_env_script libexec/"mvl",
