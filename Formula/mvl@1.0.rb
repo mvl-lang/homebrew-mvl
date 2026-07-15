@@ -22,16 +22,34 @@ class MvlAT10 < Formula
   keg_only :versioned_formula
 
   def install
-    system "cargo", "build", "--release"
+    system "cargo", "build", "--release", "--workspace"
+
+    # See mvl-lang/homebrew-mvl#1: the compiler binary bakes
+    # MVL_RUNTIME_VERSION in via build.rs by reading
+    # runtime/rust/Cargo.toml.  For v1.0.0 this happens to equal the
+    # compiler version, but we key on it explicitly so a hypothetical
+    # v1.0.1 runtime patch (without a compiler bump) would still resolve.
+    runtime_version = File.read("runtime/rust/Cargo.toml")
+                          .match(/^version\s*=\s*"([^"]+)"/)[1]
 
     libexec.install "target/release/mvl"
 
     stdlib_target = share/"mvl/toolchains/#{version}/std"
     stdlib_target.install Dir["std/*.mvl"], *Dir["std/*"].select { |p| File.directory?(p) }
+    (stdlib_target/".version").write("#{version}\n")
 
-    (share/"mvl/runtime/#{version}/rust").install Dir["runtime/rust/*"]
+    (share/"mvl/runtime/#{runtime_version}/rust").install Dir["runtime/rust/*"]
     if File.directory?("runtime/rust-tokio")
-      (share/"mvl/runtime/#{version}/rust-tokio").install Dir["runtime/rust-tokio/*"]
+      (share/"mvl/runtime/#{runtime_version}/rust-tokio").install Dir["runtime/rust-tokio/*"]
+    end
+
+    llvm_dst = share/"mvl/runtime/#{runtime_version}/llvm"
+    llvm_dst.mkpath
+    %w[
+      target/release/libmvl_runtime_llvm.dylib
+      target/release/libmvl_runtime_llvm.so
+    ].each do |candidate|
+      llvm_dst.install candidate if File.exist?(candidate)
     end
 
     (bin/"mvl").write_env_script libexec/"mvl",
@@ -57,6 +75,9 @@ class MvlAT10 < Formula
 
   test do
     assert_match version.to_s, shell_output("#{bin}/mvl --version")
+
+    # Regression check for mvl-lang/homebrew-mvl#1.
+    assert_match "All artifacts present", shell_output("#{bin}/mvl doctor")
 
     (testpath/"hello.mvl").write <<~MVL
       fn main() -> Unit ! Console {
