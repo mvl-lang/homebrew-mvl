@@ -10,9 +10,9 @@ class Mvl < Formula
   #
   # Pre-built binary bottles can be layered on top later as a speed
   # optimization; the source path is the honest default.
-  url "https://github.com/mvl-lang/mvl/archive/refs/tags/v1.3.3.tar.gz"
-  sha256 "5b62cd7a1e113ef28df34dca594a19d0203e083cfc86530b1712204909d1113c"
-  version "1.3.3"
+  url "https://github.com/mvl-lang/mvl/archive/refs/tags/v1.6.0.tar.gz"
+  sha256 "0349172041387efaabfa94459b68e37afbadee9edd3c376043aaf69f765cfe53"
+  version "1.6.0"
   head "https://github.com/mvl-lang/mvl.git", branch: "main"
 
   # Build dependencies — needed only to compile MVL, not to run it.
